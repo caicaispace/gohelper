@@ -1,11 +1,11 @@
 package triedoublearraydict
 
 import (
-	tda "github.com/caicaispace/gohelper/datastructure/tree/triedoublearray"
+	"github.com/caicaispace/gohelper/datastructure/tree/triedoublearray"
 )
 
 // Dict contains the Trie and dict values
 type Dict struct {
-	Trie   *tda.Cedar
+	Trie   *triedoublearray.Cedar
 	Values [][]string
 }

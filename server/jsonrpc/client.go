@@ -3,7 +3,7 @@ package jsonrpc
 import (
 	"errors"
 
-	"goaway/pkg/library/net/jsonrpc/client"
+	"github.com/caicaispace/gohelper/server/jsonrpc/client"
 )
 
 type ClientInterface interface {

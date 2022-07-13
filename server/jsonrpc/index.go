@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"goaway/pkg/library/setting"
-	"goaway/pkg/library/util"
-	util2 "goaway/pkg/library/util"
+	"github.com/caicaispace/gohelper/print"
+	"github.com/caicaispace/gohelper/setting"
+	"github.com/caicaispace/gohelper/syntax"
 )
 
 type service struct {
@@ -74,13 +74,13 @@ func (s *service) Start() {
 	if s.serverProtocol == "" {
 		s.serverProtocol = "http"
 	}
-	util.CommandPrint(util.CommandSetPrintData("jsonrpc: "+s.serverProtocol, s.serverAddr, setting.Server.RunMode))
+	print.CommandPrint(print.CommandSetPrintData("jsonrpc: "+s.serverProtocol, s.serverAddr, setting.Server.RunMode))
 	host := strings.Split(s.serverAddr, ":")[0]
 	port := strings.Split(s.serverAddr, ":")[1]
 	js, err := New(
 		s.serverProtocol,
-		util2.If(host != "", host, setting.Server.Host).(string),
-		util2.If(port != "", port, setting.Server.Port).(string),
+		syntax.If(host != "", host, setting.Server.Host).(string),
+		syntax.If(port != "", port, setting.Server.Port).(string),
 	)
 	if err != nil {
 		panic(err)

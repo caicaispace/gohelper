@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"goaway/pkg/library/net/jsonrpc/common"
+	"github.com/caicaispace/gohelper/server/jsonrpc/common"
 )
 
 type Tcp struct {

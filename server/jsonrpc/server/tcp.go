@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"sync"
 
-	"goaway/pkg/library/net/jsonrpc/common"
-	"goaway/pkg/library/net/jsonrpc/components/rate_limit"
+	"github.com/caicaispace/gohelper/server/jsonrpc/common"
+	"github.com/caicaispace/gohelper/server/jsonrpc/components/rate_limit"
 )
 
 type Tcp struct {

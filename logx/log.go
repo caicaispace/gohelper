@@ -1,4 +1,4 @@
-package hlog
+package logx
 
 import (
 	"fmt"

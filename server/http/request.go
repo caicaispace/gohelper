@@ -3,19 +3,17 @@ package http
 import (
 	"net/http"
 
-	"goaway/pkg/library/core/e"
-	"goaway/pkg/library/core/l"
-	"goaway/pkg/library/util/business"
-
-	"github.com/unknwon/com"
-
 	"github.com/astaxie/beego/validation"
+	"github.com/caicaispace/gohelper/business"
+	"github.com/caicaispace/gohelper/errx"
+	"github.com/caicaispace/gohelper/logx"
 	"github.com/gin-gonic/gin"
+	"github.com/unknwon/com"
 )
 
 func MarkErrors(errors []*validation.Error) {
 	for _, err := range errors {
-		l.Info(err.Key, err.Message)
+		logx.Info(err.Key, err.Message)
 	}
 }
 
@@ -23,18 +21,18 @@ func MarkErrors(errors []*validation.Error) {
 func BindAndValid(c *gin.Context, body interface{}) (int, int) {
 	err := c.Bind(body)
 	if err != nil {
-		return http.StatusBadRequest, e.InvalidParams
+		return http.StatusBadRequest, errx.InvalidParams
 	}
 	valid := validation.Validation{}
 	check, err := valid.Valid(body)
 	if err != nil {
-		return http.StatusInternalServerError, e.Error
+		return http.StatusInternalServerError, errx.Error
 	}
 	if !check {
 		MarkErrors(valid.Errors)
-		return http.StatusBadRequest, e.InvalidParams
+		return http.StatusBadRequest, errx.InvalidParams
 	}
-	return http.StatusOK, e.Success
+	return http.StatusOK, errx.Success
 }
 
 func (c *Context) GetPager() *business.Pager {

@@ -3,8 +3,7 @@ package http
 import (
 	"net/http"
 
-	"goaway/pkg/library/core/e"
-
+	"github.com/caicaispace/gohelper/errx"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +21,7 @@ type response struct {
 func (c *Context) ResponseData(httpCode, errCode int, data interface{}, msg interface{}, err error) {
 	rsp := response{
 		Code: errCode,
-		Msg:  e.GetMsg(errCode),
+		Msg:  errx.GetMsg(errCode),
 		Data: data,
 	}
 	if msg != nil {
@@ -35,7 +34,7 @@ func (c *Context) ResponseData(httpCode, errCode int, data interface{}, msg inte
 }
 
 func (c *Context) Success(data interface{}, err error) {
-	c.ResponseData(http.StatusOK, e.Success, data, nil, err)
+	c.ResponseData(http.StatusOK, errx.Success, data, nil, err)
 }
 
 func (c *Context) Error(httpCode, errCode int, msg interface{}, err error) {

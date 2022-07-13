@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/caicaispace/gohelper/datastructure/tree/triedoublearray"
+	"github.com/caicaispace/gohelper/tree/triedoublearray"
 )
 
 // Load gob serialized dict from dir

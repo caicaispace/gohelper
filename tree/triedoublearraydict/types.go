@@ -1,7 +1,7 @@
 package triedoublearraydict
 
 import (
-	"github.com/caicaispace/gohelper/datastructure/tree/triedoublearray"
+	"github.com/caicaispace/gohelper/tree/triedoublearray"
 )
 
 // Dict contains the Trie and dict values

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/caicaispace/gohelper/datastructure/tree/triedoublearray"
+	"github.com/caicaispace/gohelper/tree/triedoublearray"
 )
 
 // BuildFromFile builds the da dict from fileName

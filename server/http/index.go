@@ -11,11 +11,10 @@ import (
 	"syscall"
 	"time"
 
-	"goaway/pkg/library/core/l"
-	"goaway/pkg/library/net/http/middleware"
-	"goaway/pkg/library/setting"
-	"goaway/pkg/library/util"
-
+	"github.com/caicaispace/gohelper/logx"
+	"github.com/caicaispace/gohelper/print"
+	"github.com/caicaispace/gohelper/server/http/middleware"
+	"github.com/caicaispace/gohelper/setting"
 	"github.com/gin-gonic/gin"
 )
 
@@ -89,13 +88,13 @@ func listenSignal(ctx context.Context, httpSrv *http.Server) {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	sig := <-sc
-	l.Infof("exit: signal=<%d>.", sig)
+	logx.Infof("exit: signal=<%d>.", sig)
 	switch sig {
 	case syscall.SIGTERM:
-		l.Infof("exit: bye :-).")
+		logx.Infof("exit: bye :-).")
 		os.Exit(0)
 	default:
-		l.Infof("exit: bye :-(.")
+		logx.Infof("exit: bye :-(.")
 		// // CPU 性能分析
 		// f.Close()
 		// pprof.StopCPUProfile()
@@ -123,7 +122,7 @@ func (s *Service) Start() {
 		setting.Server.Addr = s.ServerAddr
 	}
 	s.registerDefaultRouter()
-	util.CommandPrint(util.CommandSetPrintData("restful", setting.Server.Addr, setting.Server.RunMode))
+	print.CommandPrint(print.CommandSetPrintData("restful", setting.Server.Addr, setting.Server.RunMode))
 	maxHeaderBytes := 1 << 20
 	gin.SetMode(setting.Server.RunMode)
 	httpServer := &http.Server{

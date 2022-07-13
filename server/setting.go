@@ -1,12 +1,14 @@
-package net
+package server
 
 import (
 	"flag"
 	"time"
 
-	"goaway/pkg/library/core/l"
-	"goaway/pkg/library/setting"
-	util2 "goaway/pkg/library/util"
+	"github.com/caicaispace/gohelper/logx"
+	"github.com/caicaispace/gohelper/netx"
+	"github.com/caicaispace/gohelper/runtimex"
+	"github.com/caicaispace/gohelper/setting"
+	"github.com/caicaispace/gohelper/syntax"
 )
 
 var (
@@ -42,15 +44,15 @@ func init() {
 }
 
 func New() {
-	l.Setup()
+	logx.Setup()
 }
 
 func initServerSetting() {
 	setting.Server.Env = *env
-	setting.Server.Host = util2.If(*env == "dev", *host, util2.LocalIP()).(string)
+	setting.Server.Host = syntax.If(*env == "dev", *host, netx.LocalIP()).(string)
 	setting.Server.Port = *port
 	setting.Server.Addr = setting.Server.Host + ":" + *port
-	setting.Server.RootPath = util2.GetCurrentAbPath()
+	setting.Server.RootPath = runtimex.GetCurrentAbPath()
 	setting.Server.ReadTimeout = time.Duration(*readTimeout)
 	setting.Server.WriteTimeout = time.Duration(*writeTimeout)
 	// if setting.ServerSetting.Env == "dev" && strings.Contains(setting.ServerSetting.RootPath, "banned") == false {
@@ -61,7 +63,7 @@ func initServerSetting() {
 
 func initAppSetting() {
 	setting.App.TimeFormat = *timeFormat
-	setting.App.RootPath = util2.GetCurrentAbPath()
+	setting.App.RootPath = runtimex.GetCurrentAbPath()
 	setting.App.LogPath = *logPath
 	setting.App.LogPrefix = *logPrefix
 	setting.App.LogExtension = *logExtension

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/caicaispace/gohelper/file"
+	"github.com/caicaispace/gohelper/filex"
 )
 
 type Level int
@@ -36,7 +36,7 @@ func Setup() {
 	var err error
 	filePath := getLogFilePath()
 	fileName := getLogFileName()
-	F, err = file.MustOpen(fileName, filePath)
+	F, err = filex.MustOpen(fileName, filePath)
 	if err != nil {
 		log.Fatalf("logger.Setup err: %v", err)
 	}

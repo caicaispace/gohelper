@@ -1,4 +1,4 @@
-package util
+package stringx
 
 import (
 	"fmt"

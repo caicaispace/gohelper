@@ -3,11 +3,13 @@ module github.com/caicaispace/gohelper
 go 1.18
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/astaxie/beego v1.12.3
 	github.com/gin-gonic/gin v1.8.1
 	github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23
 	github.com/landoop/tableprinter v0.0.0-20201125135848-89e81fc956e7
+	github.com/lxmgo/config v0.0.0-20180313024057-8db99aca0f7e
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.4.5
 	github.com/openzipkin/zipkin-go v0.4.0

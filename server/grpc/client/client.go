@@ -1,11 +1,11 @@
 package client
 
 import (
-	"fmt"
 	"math/rand"
 	"sync"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 )
 
 type ClientConn struct {
@@ -44,8 +44,6 @@ func (c *Client) AddConn(name, addr, uniqueId string) error {
 	if err != nil {
 		return err
 	}
-	// 延迟关闭连接
-	// defer conn.Close()
 	c.conns[name] = append(c.conns[name], &ClientConn{
 		name:     name,
 		addr:     addr,
@@ -56,7 +54,6 @@ func (c *Client) AddConn(name, addr, uniqueId string) error {
 }
 
 func (c *Client) DelConn(uniqueId string) {
-	fmt.Println(uniqueId)
 	for _, conn1 := range c.conns {
 		for k, conn2 := range conn1 {
 			if conn2.uniqueId == uniqueId {
@@ -85,6 +82,10 @@ func (c *Client) RoundRobinBalance(name string) *grpc.ClientConn {
 			return conns[0].conn
 		default:
 			c.currentConn = (c.currentConn + 1) % len(conns)
+			if conns[c.currentConn].conn.GetState() == connectivity.Idle {
+				c.DelConn(conns[c.currentConn].uniqueId)
+				return c.RoundRobinBalance(conns[c.currentConn].name)
+			}
 			return conns[c.currentConn].conn
 		}
 	}

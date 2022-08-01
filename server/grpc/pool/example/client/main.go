@@ -21,8 +21,8 @@ import (
 	"log"
 	"time"
 
-	"grpc-demo/src/gin/library/net/grpc/pool"
-	"grpc-demo/src/gin/library/net/grpc/pool/example/pb"
+	"github.com/caicaispace/gohelper/server/grpc/pool"
+	"github.com/caicaispace/gohelper/server/grpc/pool/example/pb"
 )
 
 var addr = flag.String("addr", "127.0.0.1:50000", "the address to connect to")

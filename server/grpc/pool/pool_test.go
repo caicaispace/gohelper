@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"grpc-demo/src/gin/library/net/grpc/pool/example/pb"
+	"github.com/caicaispace/gohelper/server/grpc/pool/example/pb"
 
 	"github.com/stretchr/testify/require"
 )

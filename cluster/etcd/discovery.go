@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"grpc-demo/src/gin/library/net/grpc/client"
+	"github.com/caicaispace/gohelper/server/grpc/client"
 
 	clientV3 "go.etcd.io/etcd/client/v3"
 )

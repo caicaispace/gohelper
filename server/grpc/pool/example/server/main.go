@@ -21,8 +21,8 @@ import (
 	"log"
 	"net"
 
-	"grpc-demo/src/gin/library/net/grpc/pool"
-	"grpc-demo/src/gin/library/net/grpc/pool/example/pb"
+	"github.com/caicaispace/gohelper/server/grpc/pool"
+	"github.com/caicaispace/gohelper/server/grpc/pool/example/pb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"

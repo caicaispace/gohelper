@@ -4,13 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/caicaispace/gohelper/server/grpc/_example/client"
-	"github.com/caicaispace/gohelper/server/grpc/_example/server"
+	"github.com/caicaispace/gohelper/server/grpc/_example"
 )
 
 func TestHello(t *testing.T) {
 	const (
-		seconds = 10
+		seconds = 5
 	)
 	timer := time.NewTimer(time.Second * seconds)
 	quit := make(chan struct{})
@@ -21,8 +20,8 @@ func TestHello(t *testing.T) {
 		close(quit)
 	}()
 
-	go server.NewServer()
-	go client.NewClient()
+	go _example.NewServer()
+	go _example.NewClient()
 
 	for {
 		select {

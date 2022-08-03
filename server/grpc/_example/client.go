@@ -1,4 +1,4 @@
-package client
+package _example
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/caicaispace/gohelper/cluster/etcd"
-	"github.com/caicaispace/gohelper/server/grpc/_example"
+	"github.com/caicaispace/gohelper/server/grpc/_example/hello"
 	"github.com/caicaispace/gohelper/server/grpc/client"
 	clientV3 "go.etcd.io/etcd/client/v3"
 )
@@ -43,8 +43,8 @@ func NewClient() {
 		fmt.Println("")
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		c2 := _example.NewHelloWorldClient(client.GetInstance().Pick(serviceName))
-		resp, err := c2.SayHello(ctx, &_example.SayHelloReq{
+		c2 := hello.NewHelloClient(client.GetInstance().Pick(serviceName))
+		resp, err := c2.SayHello(ctx, &hello.SayHelloReq{
 			Name: "caicaispace",
 		})
 		if err != nil {

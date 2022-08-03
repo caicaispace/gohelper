@@ -1,18 +1,16 @@
-package server
+package _example
 
 import (
-	"context"
 	"fmt"
 	"time"
 
 	"github.com/caicaispace/gohelper/cluster/etcd"
-	"github.com/caicaispace/gohelper/server/grpc/_example"
+	"github.com/caicaispace/gohelper/server/grpc/_example/hello"
 	"github.com/caicaispace/gohelper/server/grpc/server"
 	clientV3 "go.etcd.io/etcd/client/v3"
 )
 
 const serverAddr = "127.0.0.1:9601"
-const serviceName = "hello"
 
 func NewServer() {
 	register, _ := etcd.NewRegister(&etcd.NodeInfo{
@@ -26,12 +24,7 @@ func NewServer() {
 		DialKeepAliveTimeout: time.Second,
 	})
 	go register.Run()
-	s := server.NewServer().SetAddr(serverAddr).Start()
-	_example.RegisterHelloWorldServer(s.GrpcServer, &HelloWorldService{})
-}
-
-type HelloWorldService struct{}
-
-func (h *HelloWorldService) SayHello(ctx context.Context, in *_example.SayHelloReq) (*_example.SayHelloRsp, error) {
-	return &_example.SayHelloRsp{Message: "Hello " + in.Name}, nil
+	s := server.NewServer(serverAddr)
+	hello.RegisterHelloServer(s.GrpcServer, hello.New())
+	s.Start()
 }

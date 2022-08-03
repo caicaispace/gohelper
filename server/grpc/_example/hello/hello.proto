@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-option go_package = "./;_example";
+option go_package = "./;hello";
 
-package example;
+package hello;
 
-service HelloWorld {
+service Hello {
   rpc SayHello (SayHelloReq) returns (SayHelloRsp) {}
 }
 

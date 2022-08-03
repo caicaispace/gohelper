@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 )
 
 type ClientConn struct {
@@ -81,10 +82,10 @@ func (c *Client) RoundRobinBalance(name string) *grpc.ClientConn {
 			return conns[0].conn
 		default:
 			c.currentConn = (c.currentConn + 1) % len(conns)
-			// if conns[c.currentConn].conn.GetState() == connectivity.Idle {
-			// 	c.DelConn(conns[c.currentConn].uniqueId)
-			// 	return c.RoundRobinBalance(conns[c.currentConn].name)
-			// }
+			if conns[c.currentConn].conn.GetState() == connectivity.Idle {
+				c.DelConn(conns[c.currentConn].uniqueId)
+				return c.RoundRobinBalance(conns[c.currentConn].name)
+			}
 			return conns[c.currentConn].conn
 		}
 	}

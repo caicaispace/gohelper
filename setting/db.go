@@ -30,8 +30,8 @@ func (st *DBSetting) Get() *DBSetting {
 	return dbSetting
 }
 
-// ToAddrString config 转 addr string
-func (st *DBSetting) ToAddrString() string {
+// ToDnsString config 转 addr string
+func (st *DBSetting) ToDnsString() string {
 	port := "3306"
 	if st.Port != "" {
 		port = st.Port

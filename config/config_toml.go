@@ -26,7 +26,7 @@ type server struct {
 }
 
 type db struct {
-	Addr string
+	Dns string
 }
 
 type metric struct {
@@ -91,6 +91,19 @@ func (c *Conf) GetServerHost() string {
 }
 
 func (c *Conf) GetEs() *es {
+	var key, path string
+	for _, router := range c.ES.Routers {
+		key = router.Index + "-" + router.Type
+		_, isExist := c.ES.routerMap[key]
+		if isExist {
+			panic("please verify that the same key is configured or it will not start" + key)
+		}
+		path = router.Index + "/" + router.Type + "/_search"
+		c.ES.proxyRouters = append(c.ES.proxyRouters, path)
+		c.ES.routerMap[key] = router.Addr + "/" + path
+		c.ES.filterTypeMap[key] = router.FilterType
+		c.ES.projectMap[key] = router.ProjectId
+	}
 	return &c.ES
 }
 
@@ -103,26 +116,30 @@ func (c *Conf) GetMetric() *metric {
 }
 
 func (c *Conf) GetProxyRoutes() []string {
-	return c.ES.proxyRouters
+	return c.GetEs().proxyRouters
 }
 
 func (c *Conf) GetEsRoute(indexName, typeName string) string {
-	key, exist := c.ES.routerMap[indexName+"-"+typeName]
+	key, exist := c.GetEs().routerMap[indexName+"-"+typeName]
 	return syntax.If(exist == false, "", key).(string)
 }
 
 func (c *Conf) GetEsFilterType(indexName, typeName string) uint8 {
-	key, exist := c.ES.filterTypeMap[indexName+"-"+typeName]
+	key, exist := c.GetEs().filterTypeMap[indexName+"-"+typeName]
 	return syntax.If(exist == false, 0, key).(uint8)
 }
 
 func (c *Conf) GetEsProjectId(indexName, typeName string) uint8 {
-	key, exist := c.ES.projectMap[indexName+"-"+typeName]
+	key, exist := c.GetEs().projectMap[indexName+"-"+typeName]
 	return syntax.If(exist == false, 0, key).(uint8)
 }
 
-func (c *Conf) GetDB() string {
-	return c.DB.Addr
+func (c *Conf) GetDb() *db {
+	return &c.DB
+}
+
+func (c *Conf) GetDbDns() string {
+	return c.DB.Dns
 }
 
 func (c *Conf) loadFile() {
@@ -139,18 +156,5 @@ func (c *Conf) loadFile() {
 	}
 	if c.Env != "" {
 		setting.Server.Env = c.Env
-	}
-	var key, path string
-	for _, router := range conf.ES.Routers {
-		key = router.Index + "-" + router.Type
-		_, isExist := conf.ES.routerMap[key]
-		if isExist {
-			panic("please verify that the same key is configured or it will not start" + key)
-		}
-		path = router.Index + "/" + router.Type + "/_search"
-		conf.ES.proxyRouters = append(conf.ES.proxyRouters, path)
-		conf.ES.routerMap[key] = router.Addr + "/" + path
-		conf.ES.filterTypeMap[key] = router.FilterType
-		conf.ES.projectMap[key] = router.ProjectId
 	}
 }

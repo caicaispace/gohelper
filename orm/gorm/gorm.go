@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/caicaispace/gohelper/setting"
@@ -15,6 +16,18 @@ import (
 
 type GromStruct struct {
 	dbs map[string]*orm.DB
+}
+
+var (
+	service *GromStruct
+	once    sync.Once
+)
+
+func GetInstance() *GromStruct {
+	once.Do(func() {
+		service = New()
+	})
+	return service
 }
 
 func New() *GromStruct {

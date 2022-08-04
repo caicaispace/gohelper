@@ -38,8 +38,8 @@ func (gs *GromStruct) AddConnWithDns(dns string, connName string) *GromStruct {
 	return gs
 }
 
-func (g *GromStruct) GetDB(connName string) *orm.DB {
-	return g.dbs[getConnName(connName)]
+func (gs *GromStruct) GetDB(connName string) *orm.DB {
+	return gs.dbs[getConnName(connName)]
 }
 
 func (gs *GromStruct) AddConn(db *orm.DB, connName string) *GromStruct {

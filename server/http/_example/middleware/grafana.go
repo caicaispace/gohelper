@@ -1,13 +1,19 @@
 package middleware
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 )
 
-type GrafanaService struct{}
+type grafanaMiddleware struct{}
 
-func NewGrafana(r *gin.Engine) *GrafanaService {
+func NewGrafana() *grafanaMiddleware {
+	return &grafanaMiddleware{}
+}
+
+func (t grafanaMiddleware) Use(r *gin.Engine) {
 	// get global Monitor object
 	m := ginmetrics.GetMonitor()
 	// +optional set metric path, default /debug/metrics
@@ -19,5 +25,10 @@ func NewGrafana(r *gin.Engine) *GrafanaService {
 	m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
 	// set middleware for gin
 	m.Use(r)
-	return &GrafanaService{}
+	r.Use(t.handle)
+}
+
+func (t *grafanaMiddleware) handle(context *gin.Context) {
+	log.Println(context.Request.RequestURI)
+	context.Next()
 }

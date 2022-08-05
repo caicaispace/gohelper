@@ -1,8 +1,8 @@
 package _example
 
 import (
-	"github.com/caicaispace/gohelper/server/http"
 	httpServer "github.com/caicaispace/gohelper/server/http"
+	"github.com/caicaispace/gohelper/server/http/_example/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,27 +10,55 @@ const serverAddr = "127.0.0.1:9601"
 
 func NewServer() {
 	s := httpServer.NewServer()
-	s.SetServerAddr(serverAddr)
-	apiV1 := s.Engine.Group("/v1/api")
-	{
-		apiV1.GET("/test", Test)
-		apiV1.GET("/test_pager", TestPager)
-	}
+	s.AddServerAddr(serverAddr)
+	s.AddMiddlewares(
+		// middleware.NewTrace(),
+		middleware.NewGrafana(),
+	)
+	s.AddRoutes(
+		NewTestHandle(),
+	)
 	s.Start()
 }
 
-func Test(c *gin.Context) {
-	ctx := http.Context{C: c}
-	ctx.Success(nil, nil)
+type TestHandle struct {
+	serviceName     string
+	routerGroupPath string
 }
 
-func TestPager(c *gin.Context) {
-	ctx := http.Context{C: c}
-	pager := ctx.GetPager()
-	pager.SetTotal(100)
-	ctx.Success(gin.H{
-		"page":  pager.GetPage(),
-		"limit": pager.GetLimit(),
-		"total": pager.GetTotal(),
-	}, nil)
+func NewTestHandle() *TestHandle {
+	return &TestHandle{
+		serviceName:     "test",
+		routerGroupPath: "/v1/api",
+	}
+}
+
+func (th *TestHandle) Router(server *httpServer.Server) {
+	router := server.Engine.Group(th.routerGroupPath)
+	{
+		router.GET("/test", th.Test())
+		router.GET("/test_pager", th.TestPager())
+	}
+	// server.Handle(http.MethodGet, "/v1/api/test", th.Test())
+	// server.Handle(http.MethodGet, "/v1/api/test_pager", th.TestPager())
+}
+
+func (th *TestHandle) Test() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := httpServer.Context{C: c}
+		ctx.Success(nil, nil)
+	}
+}
+
+func (th *TestHandle) TestPager() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := httpServer.Context{C: c}
+		pager := ctx.GetPager()
+		pager.SetTotal(100)
+		ctx.Success(gin.H{
+			"page":  pager.GetPage(),
+			"limit": pager.GetLimit(),
+			"total": pager.GetTotal(),
+		}, nil)
+	}
 }

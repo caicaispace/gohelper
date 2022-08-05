@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/caicaispace/gohelper/logx"
 	"github.com/caicaispace/gohelper/print"
-	"github.com/caicaispace/gohelper/server/http/middleware"
 	"github.com/caicaispace/gohelper/setting"
 	"github.com/gin-gonic/gin"
 )
@@ -24,17 +24,114 @@ var (
 	count      int64
 )
 
+type IRouter interface {
+	Router(server *Server)
+}
+
+type IMiddleware interface {
+	Use(r *gin.Engine)
+}
+
 func init() {
 	setting.Server.RunMode = *serverMode
 }
 
-type Service struct {
+type Server struct {
 	*gin.Engine
-	ServerAddr string
-	beforeFunc func(env string)
+	group       *gin.RouterGroup
+	serverAddr  string
+	serverHost  string
+	serverPort  string
+	openProfile bool
+	beforeFunc  func(env string)
 }
 
-func (s *Service) registerDefaultRouter() {
+func NewServer() *Server {
+	gin.SetMode(gin.ReleaseMode)
+	gin.DefaultWriter = ioutil.Discard // disable router map log
+	return &Server{
+		Engine: gin.New(),
+		// Engine: gin.Default(),
+	}
+}
+
+func (s *Server) AddMiddlewares(middlewares ...IMiddleware) *Server {
+	for _, m := range middlewares {
+		m.Use(s.Engine)
+	}
+	return s
+}
+
+func (s *Server) AddRoutes(routers ...IRouter) *Server {
+	for _, c := range routers {
+		c.Router(s)
+	}
+	return s
+}
+
+func (s *Server) AddGroupRouters(group string, routers ...IRouter) *Server {
+	s.group = s.Group(group)
+	for _, c := range routers {
+		c.Router(s)
+	}
+	return s
+}
+
+func (s *Server) AddBeforeFunc(fn func(env string)) *Server {
+	s.beforeFunc = fn
+	return s
+}
+
+func (s *Server) AddServerAddr(addr string) *Server {
+	addrArr := strings.Split(addr, ":")
+	s.serverHost = addrArr[0]
+	s.serverPort = addrArr[1]
+	s.serverAddr = addr
+	return s
+}
+
+func (s *Server) OpenProfile(status bool) *Server {
+	s.openProfile = status
+	return s
+}
+
+// var f *os.File
+
+func (s *Server) Start() {
+	// //CPU 性能分析
+	// runtime.GOMAXPROCS(1)              // 限制 CPU 使用数，避免过载
+	// runtime.SetMutexProfileFraction(1) // 开启对锁调用的跟踪
+	// runtime.SetBlockProfileRate(1)     // 开启对阻塞操作的跟踪
+	// f, err := os.OpenFile("cpu.prof", os.O_RDWR|os.O_CREATE, 0644)
+	// if err != nil {
+	// 	l.Error(err)
+	// 	return
+	// }
+	// pprof.StartCPUProfile(f)
+	s.Engine.Use(gin.Logger())
+	s.Engine.Use(gin.Recovery())
+	if s.beforeFunc != nil {
+		s.beforeFunc(setting.Server.Env)
+	}
+	if s.serverAddr != "" {
+		setting.Server.Addr = s.serverAddr
+	}
+	s.registerDefaultRouter()
+	print.CommandPrint(print.CommandSetPrintData("http", setting.Server.Addr, setting.Server.RunMode))
+	maxHeaderBytes := 1 << 20
+	gin.SetMode(setting.Server.RunMode)
+	httpServer := &http.Server{
+		Addr:           setting.Server.Addr,
+		Handler:        s.Engine,
+		ReadTimeout:    time.Duration(setting.Server.ReadTimeout) * time.Second,
+		WriteTimeout:   time.Duration(setting.Server.WriteTimeout) * time.Second,
+		MaxHeaderBytes: maxHeaderBytes,
+	}
+	go httpServer.ListenAndServe()
+	listenSignal(context.Background(), httpServer)
+}
+
+func (s *Server) registerDefaultRouter() {
 	s.Engine.GET("/check", func(c *gin.Context) {
 		c.String(http.StatusOK, "ok "+fmt.Sprint(count)+" remote:"+c.Request.RemoteAddr+" "+c.Request.URL.String())
 		count++
@@ -43,46 +140,6 @@ func (s *Service) registerDefaultRouter() {
 		c.String(http.StatusOK, "pong")
 	})
 }
-
-func NewServer() *Service {
-	gin.SetMode(gin.ReleaseMode)
-	gin.DefaultWriter = ioutil.Discard // disable router map log
-	return &Service{
-		Engine: gin.New(),
-		// Engine: gin.Default(),
-	}
-}
-
-func (s *Service) SetBeforeFunc(fn func(env string)) *Service {
-	s.beforeFunc = fn
-	return s
-}
-
-func (s *Service) SetRouters() {
-}
-
-func (s *Service) SetServerAddr(addr string) *Service {
-	s.ServerAddr = addr
-	return s
-}
-
-// zipkin
-func (s *Service) UseTrace(zipkinAddr, serviceName, serviceAddr string) *Service {
-	trace := middleware.NewTraceV2(zipkinAddr, serviceName, serviceAddr)
-	s.Engine.Use(func(c *gin.Context) {
-		span := (trace.ZipkinTracer).StartSpan(c.FullPath())
-		defer span.Finish()
-		c.Next()
-	})
-	// defer (trace.ZipkinReporter).Close()
-	return s
-}
-
-func (s *Service) UseGrafana() {
-	middleware.NewGrafana(s.Engine)
-}
-
-// var f *os.File
 
 func listenSignal(ctx context.Context, httpSrv *http.Server) {
 	sc := make(chan os.Signal, 1)
@@ -100,39 +157,4 @@ func listenSignal(ctx context.Context, httpSrv *http.Server) {
 		// pprof.StopCPUProfile()
 		os.Exit(1)
 	}
-}
-
-func (s *Service) Start() {
-	// //CPU 性能分析
-	// runtime.GOMAXPROCS(1)              // 限制 CPU 使用数，避免过载
-	// runtime.SetMutexProfileFraction(1) // 开启对锁调用的跟踪
-	// runtime.SetBlockProfileRate(1)     // 开启对阻塞操作的跟踪
-	// f, err := os.OpenFile("cpu.prof", os.O_RDWR|os.O_CREATE, 0644)
-	// if err != nil {
-	// 	l.Error(err)
-	// 	return
-	// }
-	// pprof.StartCPUProfile(f)
-	s.Engine.Use(gin.Logger())
-	s.Engine.Use(gin.Recovery())
-	if s.beforeFunc != nil {
-		s.beforeFunc(setting.Server.Env)
-	}
-	if s.ServerAddr != "" {
-		setting.Server.Addr = s.ServerAddr
-	}
-	s.registerDefaultRouter()
-	print.CommandPrint(print.CommandSetPrintData("restful", setting.Server.Addr, setting.Server.RunMode))
-	maxHeaderBytes := 1 << 20
-	gin.SetMode(setting.Server.RunMode)
-	httpServer := &http.Server{
-		// Addr: "0.0.0.0:" + strings.Split(setting.Server.Addr, ":")[1],
-		Addr:           setting.Server.Addr,
-		Handler:        s.Engine,
-		ReadTimeout:    time.Duration(setting.Server.ReadTimeout) * time.Second,
-		WriteTimeout:   time.Duration(setting.Server.WriteTimeout) * time.Second,
-		MaxHeaderBytes: maxHeaderBytes,
-	}
-	go httpServer.ListenAndServe()
-	listenSignal(context.Background(), httpServer)
 }

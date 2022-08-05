@@ -3,6 +3,7 @@ package middleware
 import (
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	zipkinot "github.com/openzipkin-contrib/zipkin-go-opentracing"
 	"github.com/openzipkin/zipkin-go"
@@ -11,12 +12,12 @@ import (
 	zipkinHTTP "github.com/openzipkin/zipkin-go/reporter/http"
 )
 
-type Trace struct {
+type traceMiddleware struct {
 	ZipkinTracer   opentracing.Tracer
 	ZipkinReporter reporter.Reporter
 }
 
-func NewTrace(zipkinAddr, serviceName, serviceAddr string) *Trace {
+func NewTrace(zipkinAddr, serviceName, serviceAddr string) *traceMiddleware {
 	zkReporter := zipkinHTTP.NewReporter(zipkinAddr)
 	defer zkReporter.Close()
 	endpoint, err := openzipkin.NewEndpoint(serviceName, serviceAddr)
@@ -29,12 +30,21 @@ func NewTrace(zipkinAddr, serviceName, serviceAddr string) *Trace {
 	}
 	zkTracer := zipkinot.Wrap(nativeTracer)
 	opentracing.SetGlobalTracer(zkTracer)
-	return &Trace{
+	return &traceMiddleware{
 		ZipkinTracer: zkTracer,
 	}
 }
 
-func NewTraceV2(zipkinAddr, serviceName, serviceAddr string) *Trace {
+func (t traceMiddleware) Use(r *gin.Engine) {
+	r.Use(t.handle)
+}
+
+func (t *traceMiddleware) handle(context *gin.Context) {
+	log.Println(context.Request.RequestURI)
+	context.Next()
+}
+
+func NewTraceV2(zipkinAddr, serviceName, serviceAddr string) *traceMiddleware {
 	zkReporter := zipkinHTTP.NewReporter(zipkinAddr)
 	endpoint, err := openzipkin.NewEndpoint(serviceName, serviceAddr)
 	if err != nil {
@@ -48,7 +58,7 @@ func NewTraceV2(zipkinAddr, serviceName, serviceAddr string) *Trace {
 	}
 	zkTracer := zipkinot.Wrap(nativeTracer)
 	opentracing.SetGlobalTracer(zkTracer)
-	return &Trace{
+	return &traceMiddleware{
 		ZipkinTracer:   zkTracer,
 		ZipkinReporter: zkReporter,
 	}

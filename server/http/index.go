@@ -82,6 +82,11 @@ func (s *Server) AddBeforeFunc(fn func(env string)) *Server {
 	return s
 }
 
+func (s *Server) SetBeforeFunc(fn func(env string)) *Server {
+	s.AddBeforeFunc(fn)
+	return s
+}
+
 func (s *Server) AddServerAddr(addr string) *Server {
 	addrArr := strings.Split(addr, ":")
 	s.serverHost = addrArr[0]
@@ -90,7 +95,12 @@ func (s *Server) AddServerAddr(addr string) *Server {
 	return s
 }
 
-func (s *Server) OpenProfile(status bool) *Server {
+func (s *Server) SetServerAddr(addr string) *Server {
+	s.AddServerAddr(addr)
+	return s
+}
+
+func (s *Server) SetOpenProfile(status bool) *Server {
 	s.openProfile = status
 	return s
 }

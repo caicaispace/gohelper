@@ -18,6 +18,9 @@ func NewServer() {
 	s.AddRoutes(
 		NewTestHandle(),
 	)
+	// s.AddGroupRouters("/v1/api",
+	// 	NewTestHandle(),
+	// )
 	s.Start()
 }
 

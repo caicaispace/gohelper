@@ -29,7 +29,7 @@ func init() {
 }
 
 type Service struct {
-	Engine     *gin.Engine
+	*gin.Engine
 	ServerAddr string
 	beforeFunc func(env string)
 }

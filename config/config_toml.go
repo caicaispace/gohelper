@@ -95,14 +95,13 @@ func (c *Conf) GetEs() *es {
 	for _, router := range c.ES.Routers {
 		key = router.Index + "-" + router.Type
 		_, isExist := c.ES.routerMap[key]
-		if isExist {
-			panic("please verify that the same key is configured or it will not start" + key)
+		if !isExist {
+			path = router.Index + "/" + router.Type + "/_search"
+			c.ES.proxyRouters = append(c.ES.proxyRouters, path)
+			c.ES.routerMap[key] = router.Addr + "/" + path
+			c.ES.filterTypeMap[key] = router.FilterType
+			c.ES.projectMap[key] = router.ProjectId
 		}
-		path = router.Index + "/" + router.Type + "/_search"
-		c.ES.proxyRouters = append(c.ES.proxyRouters, path)
-		c.ES.routerMap[key] = router.Addr + "/" + path
-		c.ES.filterTypeMap[key] = router.FilterType
-		c.ES.projectMap[key] = router.ProjectId
 	}
 	return &c.ES
 }

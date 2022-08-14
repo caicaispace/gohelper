@@ -1,8 +1,11 @@
 package mathx
 
-import "math"
+import (
+	"math"
+	"strconv"
+)
 
-// 取两整数较小值
+// MinInt 取两整数较小值
 func MinInt(a, b int) int {
 	if a > b {
 		return b
@@ -10,7 +13,7 @@ func MinInt(a, b int) int {
 	return a
 }
 
-// 取两整数较大值
+// MaxInt 取两整数较大值
 func MaxInt(a, b int) int {
 	if a > b {
 		return a
@@ -41,4 +44,18 @@ func CalcEntropy(m map[interface{}]int) float64 {
 	}
 
 	return entropy / math.Log2(float64(len(m)))
+}
+
+// MathRound
+func MathRound(num float64, decimal int) (float64, error) {
+	// 默认乘1
+	d := float64(1)
+	if decimal > 0 {
+		// 10的N次方
+		d = math.Pow10(decimal)
+	}
+	// math.trunc作用就是返回浮点数的整数部分
+	// 再除回去，小数点后无效的0也就不存在了
+	res := strconv.FormatFloat(math.Trunc(num*d)/d, 'f', -1, 64)
+	return strconv.ParseFloat(res, 64)
 }

@@ -4,5 +4,6 @@
 .vscode
 
 *.log
+*.html
 
 vendor

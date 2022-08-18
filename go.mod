@@ -7,6 +7,7 @@ require (
 	github.com/astaxie/beego v1.12.3
 	github.com/coreos/etcd v3.3.27+incompatible
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-echarts/go-echarts/v2 v2.2.4
 	github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9
 	github.com/golang/protobuf v1.5.2
 	github.com/kataras/tablewriter v0.0.0-20180708051242-e063d29b7c23

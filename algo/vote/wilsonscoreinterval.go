@@ -10,6 +10,10 @@ func NewWilsonScoreInterval() *WilsonScoreInterval {
 	return &WilsonScoreInterval{}
 }
 
+/**
+ * ups（赞成票数）
+ * downs（反对票数）
+ */
 func (wsi *WilsonScoreInterval) Hot(ups, downs int) float64 {
 	n := float64(ups + downs)
 

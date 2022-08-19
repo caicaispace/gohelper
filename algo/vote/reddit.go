@@ -1,7 +1,6 @@
 package vote
 
 import (
-	"fmt"
 	"math"
 	"time"
 )
@@ -15,7 +14,7 @@ type Reddit struct {
 func NewReddit() *Reddit {
 	epoch, err := time.Parse("2006-01-02 15:04:05", "1970-01-01 00:00:00")
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
 		panic(err)
 	}
 	return &Reddit{
@@ -23,6 +22,11 @@ func NewReddit() *Reddit {
 	}
 }
 
+/**
+ * ups（赞成票数）
+ * downs（反对票数）
+ * date（发帖时间）
+ */
 func (r *Reddit) Hot(ups, downs int, date time.Time) float64 {
 	// The hot formula. Should match the equivalent function in postgres
 	s := r.score(ups, downs)
@@ -33,7 +37,7 @@ func (r *Reddit) Hot(ups, downs int, date time.Time) float64 {
 	} else if s < 0 {
 		sign = 0
 	}
-	seconds := r.epochSecends(date) - 1134028003
+	seconds := r.epochSecends(date) - 1134028003 // 1134028003 project start time
 	return math.Abs(order + float64(sign*seconds)/45000)
 }
 
@@ -41,9 +45,9 @@ func (r *Reddit) epochSecends(date time.Time) int64 {
 	td := date.Sub(r.epoch)
 	dateSubTodayStartSeconds := date.Unix() - todayStartTimestamp()
 	nowSecondSubNowSecondStartMicroseconds := time.Now().UnixMicro() - nowSecondStartMicroseconds()
-	fmt.Println(int64(td.Hours() / 24 * 86400))
-	fmt.Println(dateSubTodayStartSeconds)
-	fmt.Println(nowSecondSubNowSecondStartMicroseconds)
+	// fmt.Println(int64(td.Hours() / 24 * 86400))
+	// fmt.Println(dateSubTodayStartSeconds)
+	// fmt.Println(nowSecondSubNowSecondStartMicroseconds)
 	return int64(td.Hours()/24*86400) + dateSubTodayStartSeconds + (nowSecondSubNowSecondStartMicroseconds / 1000000)
 }
 

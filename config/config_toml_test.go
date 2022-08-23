@@ -25,15 +25,15 @@ func TestConf_GetEs(t *testing.T) {
 }
 
 func TestConf_GetEsRoute(t *testing.T) {
-	t.Log(conf.GetEsRoute("search_all_v2", "all"))
+	t.Log(conf.GetEsRoute("search_all", "all"))
 }
 
 func TestConf_GetEsFilterType(t *testing.T) {
-	t.Log(conf.GetEsFilterType("search_all_v2", "all"))
+	t.Log(conf.GetEsFilterType("search_all", "all"))
 }
 
 func TestConf_GetEsProjectId(t *testing.T) {
-	t.Log(conf.GetEsProjectId("search_all_v2", "all"))
+	t.Log(conf.GetEsProjectId("search_all", "all"))
 }
 
 func TestConf_GetProxyRoutes(t *testing.T) {

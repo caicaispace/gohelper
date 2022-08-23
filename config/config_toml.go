@@ -9,12 +9,16 @@ import (
 	"github.com/caicaispace/gohelper/runtimex"
 	"github.com/caicaispace/gohelper/setting"
 	"github.com/caicaispace/gohelper/syntax"
+	"github.com/nacos-group/nacos-sdk-go/util"
 )
+
+const DEFAULT_PATH = "/config/conf.toml"
 
 type Conf struct {
 	Title  string
 	Desc   string
 	Env    string
+	Path   string
 	Server server
 	DB     db
 	Metric metric
@@ -77,17 +81,20 @@ func GetInstance() *Conf {
 	return conf
 }
 
+func (c *Conf) SetPath(path string) {
+	c.Path = path
+}
+
 func (c *Conf) GetEnv() string {
 	return c.Env
 }
 
 func (c *Conf) GetServerHost() string {
 	return c.Server.Host
-	// localIp := setting.Server.Host
-	// if runtime.GOOS == "linux" {
-	// 	localIp = util.LocalIP()
-	// }
-	// return localIp
+}
+
+func (c *Conf) GetServerLocalIP() string {
+	return util.LocalIP()
 }
 
 func (c *Conf) GetEs() *es {
@@ -143,12 +150,15 @@ func (c *Conf) GetDbDns() string {
 
 func (c *Conf) loadFile() {
 	var err error
-	f := runtimex.GetRootPath() + "/config/conf.toml"
-	if _, err = os.Stat(f); err != nil {
+	filepath := runtimex.GetRootPath() + DEFAULT_PATH
+	if c.Path != "" {
+		filepath = runtimex.GetRootPath() + c.Path
+	}
+	if _, err = os.Stat(filepath); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	_, err = toml.DecodeFile(f, conf)
+	_, err = toml.DecodeFile(filepath, conf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

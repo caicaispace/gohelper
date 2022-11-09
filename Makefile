@@ -2,7 +2,16 @@
 
 all: build
 
-vet:
+update:
+	@go get -u all && go mod tidy && go mod vendor; true
+
+update-show:
+	@go list -u -m -mod=readonly all; true
+
+vendor:
+	@go mod tidy && go mod vendor; true
+
+analyse:
 	go vet ./...; true
 
 # go install mvdan.cc/gofumpt@latest

@@ -27,7 +27,7 @@ type Menu struct {
 }
 
 func TestAutoMigrate(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	err := db.AutoMigrate(&Menu{}) // auto generate table ddl
 	if err != nil {
 		fmt.Println(err)
@@ -36,7 +36,7 @@ func TestAutoMigrate(t *testing.T) {
 }
 
 func TestInsterData(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	var menu Menu
 	menu.Name = "test"
 	ret := db.Table("menus").Create(&menu)
@@ -45,7 +45,7 @@ func TestInsterData(t *testing.T) {
 }
 
 func TestFindData(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	var results []*Menu
 	ret := db.Table("menus").Where("id > ?", 0).Find(&results)
 	t.Log(ret)
@@ -55,7 +55,7 @@ func TestFindData(t *testing.T) {
 }
 
 func TestFindScan(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	var results []*Menu
 	db.Raw("select * from menus where id > ?", 0).Scan(&results)
 	for _, result := range results {
@@ -65,7 +65,7 @@ func TestFindScan(t *testing.T) {
 }
 
 func TestFindInBatches(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	var results []*Menu
 	ret := db.Table("menus").Where("id > ?", 0).FindInBatches(&results, 5, func(tx *orm.DB, batch int) error {
 		for _, result := range results {
@@ -82,7 +82,7 @@ func TestFindInBatches(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	var menu Menu
 	menu.Name = "test"
 	ret := db.Table("menus").Create(&menu)
@@ -95,7 +95,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestSoftDelete(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	timeNow := time.Now()
 	var menu Menu
 	menu.Name = "test3"
@@ -107,7 +107,7 @@ func TestSoftDelete(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	db := gorm.New().AddConnWithConfig(config, connName).GetDB(connName)
+	db := getDb()
 	var menu Menu
 	menu.Name = "test"
 	ret := db.Table("menus").Create(&menu)
@@ -115,4 +115,11 @@ func TestDelete(t *testing.T) {
 	t.Logf("%+v", menu)
 	ret = db.Table("menus").Where("id = ?", menu.ID).Delete(&menu)
 	t.Logf("%+v", ret)
+}
+
+func getDb() *orm.DB {
+	orm := gorm.New().AddConnWithConfig(config, connName)
+	orm.UseSlowLogger()
+	// orm.UseTracer()
+	return orm.GetDB(connName)
 }

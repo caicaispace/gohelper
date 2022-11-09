@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -8,6 +9,8 @@ import (
 	"time"
 
 	"github.com/caicaispace/gohelper/setting"
+	"go.opentelemetry.io/otel"
+	"gorm.io/plugin/opentelemetry/tracing"
 
 	"gorm.io/driver/mysql"
 	orm "gorm.io/gorm"
@@ -15,7 +18,8 @@ import (
 )
 
 type GromStruct struct {
-	dbs map[string]*orm.DB
+	dbs    map[string]*orm.DB
+	config *orm.Config
 }
 
 var (
@@ -42,7 +46,7 @@ func (gs *GromStruct) AddConnWithConfig(conf *setting.DBSetting, connName string
 }
 
 func (gs *GromStruct) AddConnWithDns(dns string, connName string) *GromStruct {
-	db, err := orm.Open(mysql.Open(dns), getGormConfig())
+	db, err := orm.Open(mysql.Open(dns), gs.config)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(0)
@@ -52,7 +56,12 @@ func (gs *GromStruct) AddConnWithDns(dns string, connName string) *GromStruct {
 }
 
 func (gs *GromStruct) AddConn(db *orm.DB, connName string) *GromStruct {
-	gs.dbs[getConnName(connName)] = db
+	gs.dbs[gs.getConnName(connName)] = db
+	return gs
+}
+
+func (gs *GromStruct) AddLogger(logger logger.Interface) *GromStruct {
+	gs.config.Logger = logger
 	return gs
 }
 
@@ -61,27 +70,27 @@ func (gs *GromStruct) GetDB(connName string) *orm.DB {
 }
 
 func (gs *GromStruct) GetConn(connName string) *orm.DB {
-	return gs.dbs[getConnName(connName)]
+	return gs.dbs[gs.getConnName(connName)]
 }
 
-func getConnName(connName string) string {
-	if connName == "" {
-		connName = "default"
+// https://github.com/go-gorm/opentelemetry
+// https://github.com/go-gorm/opentelemetry/tree/master/examples/demo
+func (gs *GromStruct) UseTracer() {
+	for _, db := range gs.dbs {
+		func(db *orm.DB) {
+			if err := db.Use(tracing.NewPlugin()); err != nil {
+				panic(err)
+			}
+			ctx := context.Background()
+			tracer := otel.Tracer("gorm")
+			ctx, span := tracer.Start(ctx, "gorm")
+			defer span.End()
+		}(db)
 	}
-	return connName
 }
 
-func getGormConfig() *orm.Config {
-	c := &orm.Config{}
-	if setting.Server.Env == "dev" {
-		c.Logger = logger.Default.LogMode(logger.Info)
-		// c.Logger slowLogger()
-	}
-	return c
-}
-
-func slowLogger() logger.Interface {
-	return logger.New(
+func (gs *GromStruct) UseSlowLogger() {
+	gs.config.Logger = logger.New(
 		// stdout
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
@@ -90,6 +99,13 @@ func slowLogger() logger.Interface {
 			Colorful:      false,         // disable color outputs
 		},
 	)
+}
+
+func (gs *GromStruct) getConnName(connName string) string {
+	if connName == "" {
+		connName = "default"
+	}
+	return connName
 }
 
 // func NewWithDSN(dns string, connName string) {

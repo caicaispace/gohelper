@@ -36,6 +36,7 @@ func GetInstance() *GromStruct {
 
 func New() *GromStruct {
 	gs := &GromStruct{}
+	gs.config = &orm.Config{}
 	gs.dbs = make(map[string]*orm.DB)
 	return gs
 }

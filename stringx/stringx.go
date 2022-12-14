@@ -13,6 +13,12 @@ func init() {
 	r = rand.New(rand.NewSource(time.Now().Unix()))
 }
 
+// SubStrZh 中文字符串截取
+func SubStrZh(str string, len int) string {
+	nameRune := []rune(str)
+	return string(nameRune[:len])
+}
+
 // RandString 生成随机字符串
 func RandString(len int) string {
 	bytes := make([]byte, len)

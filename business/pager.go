@@ -60,21 +60,21 @@ func (p *Pager) SetTotal(total int) *Pager {
 }
 
 func (p *Pager) GetPage() int {
-	if p.page == 0 {
+	if p.page <= 0 {
 		return defaultPage
 	}
 	return p.page
 }
 
 func (p *Pager) GetLimit() int {
-	if p.limit == 0 {
+	if p.limit <= 0 {
 		p.limit = defaultLimit
 	}
 	return p.limit
 }
 
 func (p *Pager) GetOffset() int {
-	if p.page == 1 {
+	if p.page <= 1 {
 		return 0
 	}
 	return (p.page - 1) * p.limit

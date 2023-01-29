@@ -325,18 +325,20 @@ func (s *Runner) RunJobWithNamedWorkerWithCB(desc, worker string, task func() er
 
 // RunCancelableTask run a task that can be cancelled
 // Example:
-// err := s.RunCancelableTask(func(ctx context.Context) {
-// 	select {
-// 	case <-ctx.Done():
-// 	// cancelled
-// 	case <-time.After(time.Second):
-// 		// do something
-// 	}
-// })
-// if err != nil {
-// 	// hanle error
-// 	return
-// }
+//
+//	err := s.RunCancelableTask(func(ctx context.Context) {
+//		select {
+//		case <-ctx.Done():
+//		// cancelled
+//		case <-time.After(time.Second):
+//			// do something
+//		}
+//	})
+//
+//	if err != nil {
+//		// hanle error
+//		return
+//	}
 func (s *Runner) RunCancelableTask(task func(context.Context)) (uint64, error) {
 	s.Lock()
 	defer s.Unlock()

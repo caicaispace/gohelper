@@ -55,10 +55,6 @@ func initServerSetting() {
 	setting.Server.RootPath = runtimex.GetCurrentAbPath()
 	setting.Server.ReadTimeout = time.Duration(*readTimeout)
 	setting.Server.WriteTimeout = time.Duration(*writeTimeout)
-	// if setting.ServerSetting.Env == "dev" && strings.Contains(setting.ServerSetting.RootPath, "banned") == false {
-	// 	fmt.Println("------------------ Please start the service in the app directory ------------------")
-	// 	os.Exit(0)
-	// }
 }
 
 func initAppSetting() {

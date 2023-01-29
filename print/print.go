@@ -7,14 +7,14 @@ import (
 	"github.com/landoop/tableprinter"
 )
 
-//PrintTable
+// PrintTable
 //
-// persons := []commandInfo{
-// 	{"addr-http", "http://" + *serverAddr},
-// 	{"run-mode", *serverRunMode},
-// }
+//	persons := []commandInfo{
+//		{"addr-http", "http://" + *serverAddr},
+//		{"run-mode", *serverRunMode},
+//	}
+//
 // util.PrintTable(persons)
-//
 func PrintTable(data interface{}) {
 	printer := tableprinter.New(os.Stdout)
 	// Optionally, customize the table, import of the underline 'tablewriter' package is required for that.
@@ -31,12 +31,13 @@ func PrintTable(data interface{}) {
 // PrintTableWithHeader
 //
 // header := []string{"Name", "Sign", "Rating"}
-// data := [][]string{
-//     []string{"A", "The Good", "500"},
-//     []string{"B", "The Very very Bad Man", "288"},
-//     []string{"C", "The Ugly", "120"},
-//     []string{"D", "The Gopher", "800"},
-// }
+//
+//	data := [][]string{
+//	    []string{"A", "The Good", "500"},
+//	    []string{"B", "The Very very Bad Man", "288"},
+//	    []string{"C", "The Ugly", "120"},
+//	    []string{"D", "The Gopher", "800"},
+//	}
 func PrintTableWithHeader(data [][]string, header []string) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader(header)

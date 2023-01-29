@@ -47,7 +47,6 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	gin.SetMode(gin.ReleaseMode)
 	gin.DefaultWriter = ioutil.Discard // disable router map log
 	return &Server{
 		Engine: gin.New(),
@@ -158,10 +157,10 @@ func listenSignal(ctx context.Context, httpSrv *http.Server) {
 	logx.Infof("exit: signal=<%d>.", sig)
 	switch sig {
 	case syscall.SIGTERM:
-		logx.Infof("exit: bye :-).")
+		logx.Infof("exit: bye :).")
 		os.Exit(0)
 	default:
-		logx.Infof("exit: bye :-(.")
+		logx.Infof("exit: bye :(.")
 		// // CPU 性能分析
 		// f.Close()
 		// pprof.StopCPUProfile()

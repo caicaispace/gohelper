@@ -17,8 +17,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.0
 	github.com/prometheus/common v0.32.1
-	github.com/stretchr/testify v1.8.0
+	github.com/redis/go-redis/v9 v9.0.2
+	github.com/stretchr/testify v1.8.1
 	github.com/unknwon/com v1.0.1
+	github.com/willf/bloom v2.0.3+incompatible
 	go.etcd.io/etcd/client/v3 v3.5.4
 	go.opentelemetry.io/otel v1.11.1
 	golang.org/x/net v0.0.0-20210917221730-978cfadd31cf
@@ -33,10 +35,11 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.18 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-errors/errors v1.0.1 // indirect
@@ -64,7 +67,9 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
+	github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/willf/bitset v1.1.11 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.4 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.4 // indirect
 	go.opentelemetry.io/otel/metric v0.31.0 // indirect

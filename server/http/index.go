@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -47,7 +47,7 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	gin.DefaultWriter = ioutil.Discard // disable router map log
+	gin.DefaultWriter = io.Discard // disable router map log
 	return &Server{
 		Engine: gin.New(),
 		// Engine: gin.Default(),

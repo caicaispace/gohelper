@@ -6,5 +6,5 @@ import (
 )
 
 func TestNowDateTime(t *testing.T) {
-	fmt.Println(NowDateTime())
+	fmt.Println(NowDatetime())
 }

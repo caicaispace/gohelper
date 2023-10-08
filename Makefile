@@ -11,12 +11,12 @@ update-show:
 vendor:
 	@go mod tidy && go mod vendor; true
 
-analyse:
-	go vet ./...; true
+fix:
+	@go vet ./...; true
 
 # go install mvdan.cc/gofumpt@latest
 fmt:
-	gofumpt -l -w ./**/*.go
+	@gofumpt -l -w ./**/*.go
 
 upgrade-go:
 	@wget https://go.dev/dl/go1.18.4.linux-amd64.tar.gz

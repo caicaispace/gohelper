@@ -60,29 +60,31 @@ func NewDispatcher(maxWorkers int, job *job) *Dispatcher {
 }
 
 // Run starts the dispatcher
-func (d *Dispatcher) Run() {
+func (d *Dispatcher) Run(block bool) {
 	// starting n number of workers
 	for i := 0; i < d.MaxWorkers; i++ {
 		worker := NewWorker(d.WorkerPool)
 		worker.Start()
 	}
 
-	go d.dispatch()
+	go d.dispatch(block)
 }
 
-func (d *Dispatcher) dispatch() {
+func (d *Dispatcher) dispatch(block bool) {
 	for {
-		select {
-		case job := <-d.Job.Queue:
-			// a job request has been received
-			go func(job Job) {
-				// try to obtain a worker job channel that is available.
-				// this will block until a worker is idle
-				jobChannel := <-d.WorkerPool
-
-				// dispatch the job to the worker job channel
-				jobChannel <- job
-			}(job)
+		job := <-d.Job.Queue
+		// a job request has been received
+		call := func(job Job) {
+			// try to obtain a worker job channel that is available.
+			// this will block until a worker is idle
+			jobChannel := <-d.WorkerPool
+			// dispatch the job to the worker job channel
+			jobChannel <- job
+		}
+		if block {
+			call(job)
+		} else {
+			go call(job)
 		}
 	}
 }

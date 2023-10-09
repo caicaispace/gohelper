@@ -13,7 +13,7 @@ func Test_worker(t *testing.T) {
 	job := worker.NewJob(10)
 	// init dispatcher
 	dispatcher := worker.NewDispatcher(3, job)
-	dispatcher.Run()
+	dispatcher.Run(false)
 
 	// init job
 	for i := 0; i < 10; i++ {

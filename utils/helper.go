@@ -74,6 +74,26 @@ func UnicodeEncode(str string) string {
 	return result
 }
 
+// UnicodeDecode 将 Unicode 字符串解码为普通字符串
+func UnicodeDecodeV2(str string) string {
+	var builder strings.Builder
+	for len(str) > 0 {
+		r, size := utf8.DecodeRuneInString(str)
+		builder.WriteRune(r)
+		str = str[size:]
+	}
+	return builder.String()
+}
+
+// UnicodeEncode 将普通字符串编码为 Unicode 字符串
+func UnicodeEncodeV2(str string) string {
+	var builder strings.Builder
+	for _, r := range str {
+		builder.WriteString(fmt.Sprintf("\\u%04X", r))
+	}
+	return builder.String()
+}
+
 // 随机一个 float64
 func RandFloat64(min, max float64) float64 {
 	return min + rand.Float64()*(max-min)

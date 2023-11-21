@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
+	"reflect"
 	"strings"
 	"syscall"
 	"unicode/utf8"
@@ -100,9 +101,13 @@ func RandFloat64(min, max float64) float64 {
 }
 
 // 打印json
-func PrintJson(v interface{}) {
+func PrintJson(v any) {
+	// 是否为数组
+	if reflect.TypeOf(v).Kind() == reflect.Slice {
+		v = map[string]any{"data": v}
+	}
 	byteData, _ := json.Marshal(v)
-	var obj map[string]interface{}
+	var obj map[string]any
 	json.Unmarshal([]byte(byteData), &obj)
 	f := colorjson.NewFormatter()
 	f.Indent = 4

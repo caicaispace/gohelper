@@ -1,8 +1,12 @@
 package print
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
+	"reflect"
 
+	"github.com/TylerBrock/colorjson"
 	"github.com/kataras/tablewriter"
 	"github.com/landoop/tableprinter"
 )
@@ -47,4 +51,19 @@ func PrintTableWithHeader(data [][]string, header []string) {
 	table.SetAutoMergeCells(true)
 	table.SetRowLine(true)
 	table.Render()
+}
+
+// 打印json
+func PrintJson(v any) {
+	// 是否为数组
+	if reflect.TypeOf(v).Kind() == reflect.Slice {
+		v = map[string]any{"data": v}
+	}
+	byteData, _ := json.Marshal(v)
+	var obj map[string]any
+	json.Unmarshal([]byte(byteData), &obj)
+	f := colorjson.NewFormatter()
+	f.Indent = 4
+	ss, _ := f.Marshal(obj)
+	fmt.Println(string(ss))
 }
